@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"path/filepath"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -12,7 +11,6 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	_ "modernc.org/sqlite"
 )
 
 var topWindow fyne.Window
@@ -20,6 +18,7 @@ var topWindow fyne.Window
 type config struct {
 	db   *sql.DB
 	cont *container.Split
+	cwd  string
 }
 
 func main() {
@@ -33,23 +32,17 @@ func main() {
 	w.SetMaster()
 	w.Resize(fyne.NewSize(640, 460))
 
-	pwd, err := os.Getwd()
+	cwd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
+	cfg := &config{cwd: cwd}
 
-	err = os.MkdirAll(filepath.Join(pwd, "db"), 0o755)
-	if err != nil {
-		panic(err)
-	}
-
-	db, err := newDatabase("")
+	db := setUpDatabase(cfg.cwd)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-
-	cfg := &config{db: db}
 
 	sidebar := cfg.sidebar(a, w)
 	company := cfg.addNewCompany(a, w)
@@ -145,28 +138,4 @@ func (c *config) sidebar(a fyne.App, w fyne.Window) *widget.List {
 	}
 
 	return list
-}
-
-func newDatabase(dbPath string) (*sql.DB, error) {
-	if dbPath == "" {
-		dbPath = "./db/my.db"
-	}
-
-	db, err := sql.Open("sqlite3", dbPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-
-	var sqliteVersion string
-	err = db.QueryRow("SELECT sqlite_version()").Scan(&sqliteVersion)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Println("DB connected successfully, version: ", sqliteVersion)
-	return db, nil
 }
