@@ -12,7 +12,7 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 var topWindow fyne.Window
@@ -43,7 +43,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err := newDB("")
+	db, err := newDatabase("")
 	if err != nil {
 		panic(err)
 	}
@@ -147,13 +147,17 @@ func (c *config) sidebar(a fyne.App, w fyne.Window) *widget.List {
 	return list
 }
 
-func newDB(dbPath string) (*sql.DB, error) {
+func newDatabase(dbPath string) (*sql.DB, error) {
 	if dbPath == "" {
 		dbPath = "./db/my.db"
 	}
 
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = db.Ping(); err != nil {
 		return nil, err
 	}
 
