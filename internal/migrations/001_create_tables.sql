@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS invoice (
     fk_to_company INTEGER NOT NULL,
     fk_payment_detail INTEGER NOT NULL,
     igst DECIMAL(19, 2) NOT NULL,
-    TOTAL DECIMAL(19, 2) NOT NULL,
+    total DECIMAL(19, 2) NOT NULL,
     fk_shipping_address integer NOT NULL,
 
     FOREIGN KEY (fk_from_company)
