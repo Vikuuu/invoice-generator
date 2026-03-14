@@ -1,8 +1,8 @@
 -- name: CreateItem :one
 INSERT INTO item (
-    name, hsn, price
+    name, hsn, price, gst
 ) VALUES (
-    ?, ?, ?
+    ?, ?, ?, ?
 )
 RETURNING *;
 
@@ -17,7 +17,8 @@ SELECT * FROM item;
 UPDATE item
 SET name = ?,
 hsn = ?,
-price = ?
+price = ?,
+gst = ?
 WHERE id = ?
 RETURNING *;
 
