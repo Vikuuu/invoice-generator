@@ -38,9 +38,9 @@ CREATE TABLE IF NOT EXISTS item (
 
 CREATE TABLE IF NOT EXISTS invoice_item (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fk_invoice INTEGER,
-    fk_item INTEGER,
-    qty INTEGER,
+    fk_invoice INTEGER NOT NULL,
+    fk_item INTEGER NOT NULL,
+    qty INTEGER NOT NULL,
 
     FOREIGN KEY (fk_invoice)
         REFERENCES invoice (id)
