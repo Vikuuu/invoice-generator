@@ -32,7 +32,7 @@ const typstMainTemplate = `
 )
 `
 
-func GenerateInvoice(input map[string]any, typstBinPath string) {
+func GenerateInvoice(input map[string]any, typstBinPath string) error {
 	now := time.Now()
 	invoiceFileName := fmt.Sprintf(
 		"invoice-%d-%02d-%02d-%02d:%02d.pdf",
@@ -44,19 +44,22 @@ func GenerateInvoice(input map[string]any, typstBinPath string) {
 	)
 	pwd, err := filepath.Abs(".")
 	if err != nil {
-		panic(err)
+		slog.Error("Filepath:", "msg", err)
+		return err
 	}
 
 	invoiceFilePath := filepath.Join(pwd, "invoices", invoiceFileName)
 
 	typstMainFilePath, err := filepath.Abs("typst/main.typ")
 	if err != nil {
-		panic(err)
+		slog.Error("Filepath:", "msg", err)
+		return err
 	}
 
 	var markup bytes.Buffer
 	if err := typst.InjectValues(&markup, input); err != nil {
 		slog.Error("Typst Dep:", "msg", err)
+		return err
 	}
 
 	markup.WriteString(typstMainTemplate)
@@ -65,6 +68,7 @@ func GenerateInvoice(input map[string]any, typstBinPath string) {
 	invoiceFile, err := os.Create(invoiceFilePath)
 	if err != nil {
 		slog.Error("File:", "msg", err)
+		return err
 	}
 	defer invoiceFile.Close()
 
@@ -75,24 +79,10 @@ func GenerateInvoice(input map[string]any, typstBinPath string) {
 
 	slog.Info("Typst: ", "markup", markup.String())
 
-	// out, err := typstCmd.Output()
 	if err = typstCaller.Compile(&markup, invoiceFile, nil); err != nil {
 		slog.Error("Typst:", "msg", err)
+		return err
 	}
-	// if err != nil {
-	// 	var execErr *exec.Error
-	// 	var exitErr *exec.ExitError
-	// 	switch {
-	// 	case errors.As(err, &execErr):
-	// 		fmt.Println("Failed executing: ", err)
-	// 	case errors.As(err, &exitErr):
-	// 		exitCode := exitErr.ExitCode()
-	// 		fmt.Println("command rc = ", exitCode)
-	// 		fmt.Println(string(exitErr.Stderr))
-	// 	default:
-	// 		panic(err)
-	// 	}
-	// }
-	// fmt.Println(string(out))
 	slog.Info("Typst: Success", "msg", "Created invoice successfully")
+	return nil
 }
