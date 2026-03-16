@@ -6,3 +6,6 @@ run: build
 
 sqlc:
 	sqlc generate
+
+clear-cache:
+	rm -rf ~/.local/share/parmaan-patr
