@@ -123,9 +123,15 @@ func (c *Config) addNewItems(a fyne.App, w fyne.Window) *widget.Form {
 
 	form.OnSubmit = func() {
 		slog.Info("Form Submitted")
-		h, _ := strconv.Atoi(hsn.Text)
-		p, _ := strconv.Atoi(price.Text)
-		if err := c.dbAddItemMethod(itemName.Text, int64(h), int64(p)); err != nil {
+		h, err := strconv.Atoi(hsn.Text)
+		if err != nil {
+			slog.Error("Strconv:", "msg", err)
+		}
+		p, err := strconv.ParseFloat(price.Text, 64)
+		if err != nil {
+			slog.Error("Strconv:", "msg", err)
+		}
+		if err := c.dbAddItemMethod(itemName.Text, int64(h), p); err != nil {
 			slog.Error("DB Error", "error", err)
 			dialog.ShowError(err, w)
 			return

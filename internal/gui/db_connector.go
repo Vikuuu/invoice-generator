@@ -1,6 +1,10 @@
 package gui
 
 import (
+	"database/sql"
+	"errors"
+	"time"
+
 	db "github.com/Vikuuu/invoice_generator/internal/database"
 )
 
@@ -39,7 +43,7 @@ func (c *Config) dbAddPaymentMethod(
 	return nil
 }
 
-func (c *Config) dbAddItemMethod(name string, hsn, price int64) error {
+func (c *Config) dbAddItemMethod(name string, hsn int64, price float64) error {
 	arg := db.CreateItemParams{
 		Name:  name,
 		Hsn:   hsn,
@@ -98,4 +102,52 @@ func (c *Config) dbListShippingAddress() ([]db.ShippingAddress, error) {
 	}
 
 	return address, nil
+}
+
+func (c *Config) dbAddInvoice(
+	invoiceNumber int64,
+	fkFromCompany, fkToCompany, fkPaymentDetail, fkShippingAddress int64,
+	igst, total float64,
+	date time.Time,
+	fkItem int64,
+	qty int64,
+) error {
+	invoiceArg := db.CreateInvoiceParams{
+		InvoiceNumber:     invoiceNumber,
+		Date:              date,
+		FkFromCompany:     fkFromCompany,
+		FkToCompany:       fkToCompany,
+		FkPaymentDetail:   fkPaymentDetail,
+		Igst:              igst,
+		Total:             total,
+		FkShippingAddress: fkShippingAddress,
+	}
+	invoice, err := c.Queries.CreateInvoice(c.Context, invoiceArg)
+	if err != nil {
+		return err
+	}
+
+	itemArg := db.CreateInvoiceItemParams{
+		FkInvoice: invoice.ID,
+		FkItem:    fkItem,
+		Qty:       qty,
+	}
+	_, err = c.Queries.CreateInvoiceItem(c.Context, itemArg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Config) dbGetLatestInvoiceNumber() (int64, error) {
+	num, err := c.Queries.GetLatestInvoiceNumber(c.Context)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return int64(1), nil
+		}
+		return int64(0), err
+	}
+
+	return num + 1, nil
 }
