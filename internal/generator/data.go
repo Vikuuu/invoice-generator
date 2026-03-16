@@ -77,6 +77,7 @@ func NewInvoice(
 }
 
 func InvoiceDataMap(
+	invoiceNumber int64,
 	fromCompany, toCompany database.Company,
 	date *time.Time,
 	item database.Item,
@@ -99,7 +100,7 @@ func InvoiceDataMap(
 		"company-gstin":   fromCompany.Gst,
 		"company-address": fromCompany.Address,
 		"invoice-date":    date,
-		"invoice-number":  1,
+		"invoice-number":  invoiceNumber,
 		"bill-to-name":    toCompany.Name,
 		"bill-to-gstin":   toCompany.Gst,
 		"bill-to-address": toCompany.Address,
