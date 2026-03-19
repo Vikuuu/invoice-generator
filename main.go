@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log/slog"
 	"os"
-	"path/filepath"
 	"runtime"
 
 	"fyne.io/fyne/v2"
@@ -45,6 +44,11 @@ func main() {
 		slog.Error("Setup: App Folder", "msg", err)
 	}
 	cfg.ApplicationPath = path
+
+	err = createAppAssetsDir()
+	if err != nil {
+		slog.Error("Setup: App assets folder", "msg", err)
+	}
 
 	typstBinPath, err := assets.Init()
 	if err != nil {
@@ -123,4 +127,16 @@ func createAppDir() (string, error) {
 		return "", err
 	}
 	return basePath, nil
+}
+
+func createAppAssetsDir() error {
+	path, err := utils.GetAssetsAppPath()
+	if err != nil {
+		return err
+	}
+
+	if err = os.MkdirAll(path, 0o755); err != nil {
+		return err
+	}
+	return nil
 }

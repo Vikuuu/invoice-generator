@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func GetLinuxAppPath() (string, error) {
@@ -28,4 +29,31 @@ func GetDarwinAppPath() (string, error) {
 		return "", err
 	}
 	return filepath.Join(home, "Library", "Application Support", "parmaan-patr"), nil
+}
+
+func GetAssetsAppPath() (string, error) {
+	var appPath string
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		appPath, err = GetLinuxAppPath()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(appPath, "assets"), nil
+	case "windows":
+		appPath, err = GetWinAppPath()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(appPath, "assets"), nil
+	case "darwin":
+		appPath, err = GetDarwinAppPath()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(appPath, "assets"), nil
+	default:
+		return "", errors.New("unsupported platform")
+	}
 }
