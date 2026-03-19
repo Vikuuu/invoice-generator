@@ -1,13 +1,19 @@
 package gui
 
 import (
+	"io"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+
+	"github.com/Vikuuu/invoice_generator/internal/utils"
 )
 
 func (c *Config) addNewCompany(a fyne.App, w fyne.Window) *widget.Form {
@@ -15,11 +21,47 @@ func (c *Config) addNewCompany(a fyne.App, w fyne.Window) *widget.Form {
 	gst := widget.NewEntry()
 	address := widget.NewMultiLineEntry()
 
+	signatureEntry := widget.NewEntry()
+	signatureEntry.SetPlaceHolder("No file selected...")
+	signatureEntry.Disable()
+	var sigPath string
+
+	browseBtn := widget.NewButton("Browse", func() {
+		sigImage := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			if reader == nil {
+				slog.Info("GUI: add new company", "msg", "got nil in reader")
+				return
+			}
+			defer reader.Close()
+
+			signatureEntry.SetText(reader.URI().Name())
+
+			assetPath, _ := utils.GetAssetsAppPath()
+			sigPath = filepath.Join(assetPath, reader.URI().Name())
+			f, err := os.Create(sigPath)
+			if err != nil {
+				slog.Error("GUI:", "msg", err)
+				return
+			}
+			defer f.Close()
+
+			_, err = io.Copy(f, reader)
+			if err != nil {
+				slog.Error("GUI:", "msg", err)
+				return
+			}
+		}, w)
+		sigImage.Show()
+	})
+
+	sigFileRow := container.NewBorder(nil, nil, nil, browseBtn, signatureEntry)
+
 	form := &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Company Name", Widget: company},
 			{Text: "GST", Widget: gst},
 			{Text: "Address", Widget: address},
+			{Text: "Signature Image", Widget: sigFileRow},
 		},
 	}
 
@@ -28,6 +70,7 @@ func (c *Config) addNewCompany(a fyne.App, w fyne.Window) *widget.Form {
 		name := strings.TrimSpace(company.Text)
 		g := strings.ToUpper(strings.TrimSpace(gst.Text))
 		addr := strings.TrimSpace(address.Text)
+		sigPath = strings.TrimSpace(sigPath)
 
 		var err error
 		if err = validateCompanyDetail(name, g, addr); err != nil {
@@ -35,7 +78,7 @@ func (c *Config) addNewCompany(a fyne.App, w fyne.Window) *widget.Form {
 			dialog.ShowError(err, w)
 			return
 		}
-		if err = c.dbAddCompany(name, g, addr); err != nil {
+		if err = c.dbAddCompany(name, g, addr, sigPath); err != nil {
 			slog.Error("DB Error", "error", err)
 			dialog.ShowError(err, w)
 			return

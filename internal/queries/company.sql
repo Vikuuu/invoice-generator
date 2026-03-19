@@ -1,8 +1,8 @@
 -- name: CreateCompany :one
 INSERT INTO company (
-    name, gst, address
+    name, gst, address, signature_image_path
 ) VALUES (
-    ?, ?, ?
+    ?, ?, ?, ?
 )
 RETURNING *;
 
@@ -17,7 +17,8 @@ SELECT * FROM company;
 UPDATE company
 SET name = ?,
 gst = ?,
-address = ?
+address = ?,
+signature_image_path = ?
 WHERE id = ?
 RETURNING *;
 

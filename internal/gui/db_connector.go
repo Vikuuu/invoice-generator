@@ -8,11 +8,12 @@ import (
 	db "github.com/Vikuuu/invoice_generator/internal/database"
 )
 
-func (c *Config) dbAddCompany(name, gst, address string) error {
+func (c *Config) dbAddCompany(name, gst, address, path string) error {
 	arg := db.CreateCompanyParams{
-		Name:    name,
-		Gst:     gst,
-		Address: address,
+		Name:               name,
+		Gst:                gst,
+		Address:            address,
+		SignatureImagePath: path,
 	}
 
 	_, err := c.Queries.CreateCompany(c.Context, arg)
