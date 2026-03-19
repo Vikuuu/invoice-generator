@@ -14,6 +14,7 @@ import (
 	"github.com/Vikuuu/invoice_generator/assets"
 	"github.com/Vikuuu/invoice_generator/internal/database"
 	gui "github.com/Vikuuu/invoice_generator/internal/gui"
+	"github.com/Vikuuu/invoice_generator/internal/utils"
 )
 
 var (
@@ -102,27 +103,20 @@ func makeMenu(a fyne.App, w fyne.Window) *fyne.MainMenu {
 
 func createAppDir() (string, error) {
 	var basePath string
+	var err error
 	switch runtime.GOOS {
 	case "linux":
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
-		}
-		basePath = filepath.Join(home, ".local", "share", "parmaan-patr")
+		basePath, err = utils.GetLinuxAppPath()
 	case "windows":
-		localAppData := os.Getenv("LOCALAPPDATA")
-		if localAppData == "" {
-			return "", errors.New("LOCALAPPDATA not set")
-		}
-		basePath = filepath.Join(localAppData, "parmaan-patr")
+		basePath, err = utils.GetWinAppPath()
 	case "darwin":
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
-		}
-		basePath = filepath.Join(home, "Library", "Application Support", "parmaan-patr")
+		basePath, err = utils.GetDarwinAppPath()
 	default:
 		return "", ErrUnsupportedPlatform
+	}
+
+	if err != nil {
+		return "", err
 	}
 
 	if err := os.MkdirAll(basePath, 0o755); err != nil {
