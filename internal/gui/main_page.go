@@ -139,7 +139,7 @@ func (c *Config) ShippingAddressPage(a fyne.App, w fyne.Window) fyne.CanvasObjec
 }
 
 func (c *Config) InvoicePage(a fyne.App, w fyne.Window) fyne.CanvasObject {
-	contentArea := container.NewStack()
+	contentArea := container.NewStack(c.createInvoiceList())
 
 	title := widget.NewLabel("Invoice Page")
 	title.TextStyle = fyne.TextStyle{Bold: true}

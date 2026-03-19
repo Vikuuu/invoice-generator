@@ -2,6 +2,7 @@ package gui
 
 import (
 	"log/slog"
+	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -65,4 +66,18 @@ func (c *Config) createShippingAddressList() fyne.CanvasObject {
 	}
 
 	return addrList
+}
+
+func (c *Config) createInvoiceList() fyne.CanvasObject {
+	invoiceList := container.NewVBox()
+	invoices, _ := c.dbListInvoices()
+	for _, invoice := range invoices {
+		invoiceList.Add(widget.NewLabel(strconv.Itoa(int(invoice.InvoiceNumber))))
+	}
+
+	if len(invoiceList.Objects) == 0 {
+		invoiceList.Add(widget.NewLabel("Your invoices will appear here..."))
+	}
+
+	return invoiceList
 }

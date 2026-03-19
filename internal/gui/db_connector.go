@@ -146,8 +146,17 @@ func (c *Config) dbGetLatestInvoiceNumber() (int64, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return int64(1), nil
 		}
-		return int64(0), err
+		return int64(1), err
 	}
 
 	return num + 1, nil
+}
+
+func (c *Config) dbListInvoices() ([]db.Invoice, error) {
+	invoice, err := c.Queries.ListInvoice(c.Context)
+	if err != nil {
+		return nil, err
+	}
+
+	return invoice, nil
 }
