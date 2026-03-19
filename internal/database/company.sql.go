@@ -11,27 +11,36 @@ import (
 
 const createCompany = `-- name: CreateCompany :one
 INSERT INTO company (
-    name, gst, address
+    name, gst, address, signature_image_path
 ) VALUES (
-    ?, ?, ?
+    ?, ?, ?, ?
 )
-RETURNING id, name, gst, address
+RETURNING id, name, gst, address, created_at, updated_at, signature_image_path
 `
 
 type CreateCompanyParams struct {
-	Name    string
-	Gst     string
-	Address string
+	Name               string
+	Gst                string
+	Address            string
+	SignatureImagePath string
 }
 
 func (q *Queries) CreateCompany(ctx context.Context, arg CreateCompanyParams) (Company, error) {
-	row := q.db.QueryRowContext(ctx, createCompany, arg.Name, arg.Gst, arg.Address)
+	row := q.db.QueryRowContext(ctx, createCompany,
+		arg.Name,
+		arg.Gst,
+		arg.Address,
+		arg.SignatureImagePath,
+	)
 	var i Company
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Gst,
 		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.SignatureImagePath,
 	)
 	return i, err
 }
@@ -47,7 +56,7 @@ func (q *Queries) DeleteCompany(ctx context.Context, id int64) error {
 }
 
 const getCompany = `-- name: GetCompany :one
-SELECT id, name, gst, address FROM company
+SELECT id, name, gst, address, created_at, updated_at, signature_image_path FROM company
 WHERE id = ? LIMIT 1
 `
 
@@ -59,12 +68,15 @@ func (q *Queries) GetCompany(ctx context.Context, id int64) (Company, error) {
 		&i.Name,
 		&i.Gst,
 		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.SignatureImagePath,
 	)
 	return i, err
 }
 
 const listCompany = `-- name: ListCompany :many
-SELECT id, name, gst, address FROM company
+SELECT id, name, gst, address, created_at, updated_at, signature_image_path FROM company
 `
 
 func (q *Queries) ListCompany(ctx context.Context) ([]Company, error) {
@@ -81,6 +93,9 @@ func (q *Queries) ListCompany(ctx context.Context) ([]Company, error) {
 			&i.Name,
 			&i.Gst,
 			&i.Address,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.SignatureImagePath,
 		); err != nil {
 			return nil, err
 		}
@@ -99,16 +114,18 @@ const updateCompany = `-- name: UpdateCompany :one
 UPDATE company
 SET name = ?,
 gst = ?,
-address = ?
+address = ?,
+signature_image_path = ?
 WHERE id = ?
-RETURNING id, name, gst, address
+RETURNING id, name, gst, address, created_at, updated_at, signature_image_path
 `
 
 type UpdateCompanyParams struct {
-	Name    string
-	Gst     string
-	Address string
-	ID      int64
+	Name               string
+	Gst                string
+	Address            string
+	SignatureImagePath string
+	ID                 int64
 }
 
 func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error) {
@@ -116,6 +133,7 @@ func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (C
 		arg.Name,
 		arg.Gst,
 		arg.Address,
+		arg.SignatureImagePath,
 		arg.ID,
 	)
 	var i Company
@@ -124,6 +142,9 @@ func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (C
 		&i.Name,
 		&i.Gst,
 		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.SignatureImagePath,
 	)
 	return i, err
 }

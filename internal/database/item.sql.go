@@ -15,7 +15,7 @@ INSERT INTO item (
 ) VALUES (
     ?, ?, ?, ?
 )
-RETURNING id, name, hsn, price, gst
+RETURNING id, name, hsn, price, gst, created_at, updated_at
 `
 
 type CreateItemParams struct {
@@ -39,6 +39,8 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.Hsn,
 		&i.Price,
 		&i.Gst,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -54,7 +56,7 @@ func (q *Queries) DeleteItem(ctx context.Context, id int64) error {
 }
 
 const getItem = `-- name: GetItem :one
-SELECT id, name, hsn, price, gst FROM item
+SELECT id, name, hsn, price, gst, created_at, updated_at FROM item
 WHERE id = ? LIMIT 1
 `
 
@@ -67,12 +69,14 @@ func (q *Queries) GetItem(ctx context.Context, id int64) (Item, error) {
 		&i.Hsn,
 		&i.Price,
 		&i.Gst,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listItem = `-- name: ListItem :many
-SELECT id, name, hsn, price, gst FROM item
+SELECT id, name, hsn, price, gst, created_at, updated_at FROM item
 `
 
 func (q *Queries) ListItem(ctx context.Context) ([]Item, error) {
@@ -90,6 +94,8 @@ func (q *Queries) ListItem(ctx context.Context) ([]Item, error) {
 			&i.Hsn,
 			&i.Price,
 			&i.Gst,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -111,7 +117,7 @@ hsn = ?,
 price = ?,
 gst = ?
 WHERE id = ?
-RETURNING id, name, hsn, price, gst
+RETURNING id, name, hsn, price, gst, created_at, updated_at
 `
 
 type UpdateItemParams struct {
@@ -137,6 +143,8 @@ func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (Item, e
 		&i.Hsn,
 		&i.Price,
 		&i.Gst,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

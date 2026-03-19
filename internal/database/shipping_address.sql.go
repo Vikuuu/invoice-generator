@@ -15,7 +15,7 @@ INSERT INTO shipping_address (
 ) VALUES (
     ?, ?
 )
-RETURNING id, name, address
+RETURNING id, name, address, created_at, updated_at
 `
 
 type CreateShippingAddressParams struct {
@@ -26,7 +26,13 @@ type CreateShippingAddressParams struct {
 func (q *Queries) CreateShippingAddress(ctx context.Context, arg CreateShippingAddressParams) (ShippingAddress, error) {
 	row := q.db.QueryRowContext(ctx, createShippingAddress, arg.Name, arg.Address)
 	var i ShippingAddress
-	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }
 
@@ -41,19 +47,25 @@ func (q *Queries) DeleteShippingAddress(ctx context.Context, id int64) error {
 }
 
 const getShippingAddress = `-- name: GetShippingAddress :one
-SELECT id, name, address FROM shipping_address
+SELECT id, name, address, created_at, updated_at FROM shipping_address
 WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetShippingAddress(ctx context.Context, id int64) (ShippingAddress, error) {
 	row := q.db.QueryRowContext(ctx, getShippingAddress, id)
 	var i ShippingAddress
-	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }
 
 const listShippingAddress = `-- name: ListShippingAddress :many
-SELECT id, name, address FROM shipping_address
+SELECT id, name, address, created_at, updated_at FROM shipping_address
 `
 
 func (q *Queries) ListShippingAddress(ctx context.Context) ([]ShippingAddress, error) {
@@ -65,7 +77,13 @@ func (q *Queries) ListShippingAddress(ctx context.Context) ([]ShippingAddress, e
 	var items []ShippingAddress
 	for rows.Next() {
 		var i ShippingAddress
-		if err := rows.Scan(&i.ID, &i.Name, &i.Address); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Address,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -84,7 +102,7 @@ UPDATE shipping_address
 SET name = ?,
 address = ?
 WHERE id = ?
-RETURNING id, name, address
+RETURNING id, name, address, created_at, updated_at
 `
 
 type UpdateShippingAddressParams struct {
@@ -96,6 +114,12 @@ type UpdateShippingAddressParams struct {
 func (q *Queries) UpdateShippingAddress(ctx context.Context, arg UpdateShippingAddressParams) (ShippingAddress, error) {
 	row := q.db.QueryRowContext(ctx, updateShippingAddress, arg.Name, arg.Address, arg.ID)
 	var i ShippingAddress
-	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }

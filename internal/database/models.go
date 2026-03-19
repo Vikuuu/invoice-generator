@@ -9,10 +9,13 @@ import (
 )
 
 type Company struct {
-	ID      int64
-	Name    string
-	Gst     string
-	Address string
+	ID                 int64
+	Name               string
+	Gst                string
+	Address            string
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	SignatureImagePath string
 }
 
 type Invoice struct {
@@ -34,14 +37,18 @@ type InvoiceItem struct {
 	FkInvoice int64
 	FkItem    int64
 	Qty       int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Item struct {
-	ID    int64
-	Name  string
-	Hsn   int64
-	Price float64
-	Gst   int64
+	ID        int64
+	Name      string
+	Hsn       int64
+	Price     float64
+	Gst       int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type PaymentDetail struct {
@@ -53,10 +60,14 @@ type PaymentDetail struct {
 	BankName           string
 	VirtualPaymentAddr string
 	FkCompanyID        int64
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
 }
 
 type ShippingAddress struct {
-	ID      int64
-	Name    string
-	Address string
+	ID        int64
+	Name      string
+	Address   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

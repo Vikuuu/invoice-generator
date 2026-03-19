@@ -17,7 +17,7 @@ INSERT INTO payment_detail (
     ?, ?, ?, ?, ?, 
     ?, ?
 )
-RETURNING id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id
+RETURNING id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id, created_at, updated_at
 `
 
 type CreatePaymentDetailParams struct {
@@ -50,6 +50,8 @@ func (q *Queries) CreatePaymentDetail(ctx context.Context, arg CreatePaymentDeta
 		&i.BankName,
 		&i.VirtualPaymentAddr,
 		&i.FkCompanyID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -65,7 +67,7 @@ func (q *Queries) DeletePaymentDetail(ctx context.Context, id int64) error {
 }
 
 const getPaymentDetailWithCompanyID = `-- name: GetPaymentDetailWithCompanyID :one
-SELECT id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id FROM payment_detail
+SELECT id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id, created_at, updated_at FROM payment_detail
 WHERE fk_company_id = ? LIMIT 1
 `
 
@@ -81,12 +83,14 @@ func (q *Queries) GetPaymentDetailWithCompanyID(ctx context.Context, fkCompanyID
 		&i.BankName,
 		&i.VirtualPaymentAddr,
 		&i.FkCompanyID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getPaymentDetailWithID = `-- name: GetPaymentDetailWithID :one
-SELECT id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id FROM payment_detail
+SELECT id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id, created_at, updated_at FROM payment_detail
 WHERE id = ? LIMIT 1
 `
 
@@ -102,12 +106,14 @@ func (q *Queries) GetPaymentDetailWithID(ctx context.Context, id int64) (Payment
 		&i.BankName,
 		&i.VirtualPaymentAddr,
 		&i.FkCompanyID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listPaymentDetail = `-- name: ListPaymentDetail :many
-SELECT id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id FROM payment_detail
+SELECT id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id, created_at, updated_at FROM payment_detail
 `
 
 func (q *Queries) ListPaymentDetail(ctx context.Context) ([]PaymentDetail, error) {
@@ -128,6 +134,8 @@ func (q *Queries) ListPaymentDetail(ctx context.Context) ([]PaymentDetail, error
 			&i.BankName,
 			&i.VirtualPaymentAddr,
 			&i.FkCompanyID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -152,7 +160,7 @@ bank_name = ?,
 virtual_payment_addr = ?,
 fk_company_id = ?
 WHERE id = ?
-RETURNING id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id
+RETURNING id, acc_holder, acc_number, ifsc, branch, bank_name, virtual_payment_addr, fk_company_id, created_at, updated_at
 `
 
 type UpdatePaymentDetailParams struct {
@@ -187,6 +195,8 @@ func (q *Queries) UpdatePaymentDetail(ctx context.Context, arg UpdatePaymentDeta
 		&i.BankName,
 		&i.VirtualPaymentAddr,
 		&i.FkCompanyID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

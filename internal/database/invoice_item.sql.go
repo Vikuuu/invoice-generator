@@ -15,7 +15,7 @@ INSERT INTO invoice_item (
 ) VALUES (
     ?, ?, ?
 )
-RETURNING id, fk_invoice, fk_item, qty
+RETURNING id, fk_invoice, fk_item, qty, created_at, updated_at
 `
 
 type CreateInvoiceItemParams struct {
@@ -32,6 +32,8 @@ func (q *Queries) CreateInvoiceItem(ctx context.Context, arg CreateInvoiceItemPa
 		&i.FkInvoice,
 		&i.FkItem,
 		&i.Qty,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -47,7 +49,7 @@ func (q *Queries) DeleteInvoiceItem(ctx context.Context, id int64) error {
 }
 
 const getInvoiceItem = `-- name: GetInvoiceItem :one
-SELECT id, fk_invoice, fk_item, qty FROM invoice_item
+SELECT id, fk_invoice, fk_item, qty, created_at, updated_at FROM invoice_item
 WHERE id = ? LIMIT 1
 `
 
@@ -59,12 +61,14 @@ func (q *Queries) GetInvoiceItem(ctx context.Context, id int64) (InvoiceItem, er
 		&i.FkInvoice,
 		&i.FkItem,
 		&i.Qty,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listInvoiceItem = `-- name: ListInvoiceItem :many
-SELECT id, fk_invoice, fk_item, qty FROM invoice_item
+SELECT id, fk_invoice, fk_item, qty, created_at, updated_at FROM invoice_item
 `
 
 func (q *Queries) ListInvoiceItem(ctx context.Context) ([]InvoiceItem, error) {
@@ -81,6 +85,8 @@ func (q *Queries) ListInvoiceItem(ctx context.Context) ([]InvoiceItem, error) {
 			&i.FkInvoice,
 			&i.FkItem,
 			&i.Qty,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -101,7 +107,7 @@ SET fk_invoice = ?,
 fk_item = ?,
 qty = ?
 WHERE id = ?
-RETURNING id, fk_invoice, fk_item, qty
+RETURNING id, fk_invoice, fk_item, qty, created_at, updated_at
 `
 
 type UpdateInvoiceItemParams struct {
@@ -124,6 +130,8 @@ func (q *Queries) UpdateInvoiceItem(ctx context.Context, arg UpdateInvoiceItemPa
 		&i.FkInvoice,
 		&i.FkItem,
 		&i.Qty,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
