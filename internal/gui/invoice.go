@@ -147,7 +147,12 @@ func (c *Config) generateInvoicePage(a fyne.App, w fyne.Window) *widget.Form {
 		}
 
 		// Generate the invoice PDF
-		err = generator.GenerateInvoice(invoiceData, c.TypstBinPath, c.TypstTemplatePath)
+		err = generator.GenerateInvoice(
+			invoiceData,
+			c.TypstBinPath,
+			c.TypstTemplatePath,
+			c.InvoiceOutputPath,
+		)
 		if err != nil {
 			slog.Error("Typst:", "msg", err)
 			dialog.ShowError(err, w)

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log/slog"
 	"os"
-	"runtime"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -13,7 +12,6 @@ import (
 	"github.com/Vikuuu/invoice_generator/assets"
 	"github.com/Vikuuu/invoice_generator/internal/database"
 	gui "github.com/Vikuuu/invoice_generator/internal/gui"
-	"github.com/Vikuuu/invoice_generator/internal/utils"
 )
 
 var (
@@ -45,6 +43,10 @@ func main() {
 	}
 	cfg.ApplicationPath = path
 	cfg.TypstTemplatePath = embedTypstTemplate
+	cfg.InvoiceOutputPath, err = getInvoiceDefaultStorePath()
+	if err != nil {
+		slog.Error("Setup: Document folder", "msg", err)
+	}
 
 	err = createAppAssetsDir()
 	if err != nil {
@@ -104,40 +106,4 @@ func makeMenu(a fyne.App, w fyne.Window) *fyne.MainMenu {
 
 	main := fyne.NewMainMenu(file, help)
 	return main
-}
-
-func createAppDir() (string, error) {
-	var basePath string
-	var err error
-	switch runtime.GOOS {
-	case "linux":
-		basePath, err = utils.GetLinuxAppPath()
-	case "windows":
-		basePath, err = utils.GetWinAppPath()
-	case "darwin":
-		basePath, err = utils.GetDarwinAppPath()
-	default:
-		return "", ErrUnsupportedPlatform
-	}
-
-	if err != nil {
-		return "", err
-	}
-
-	if err := os.MkdirAll(basePath, 0o755); err != nil {
-		return "", err
-	}
-	return basePath, nil
-}
-
-func createAppAssetsDir() error {
-	path, err := utils.GetAssetsAppPath()
-	if err != nil {
-		return err
-	}
-
-	if err = os.MkdirAll(path, 0o755); err != nil {
-		return err
-	}
-	return nil
 }

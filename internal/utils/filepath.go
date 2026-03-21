@@ -15,6 +15,14 @@ func GetLinuxAppPath() (string, error) {
 	return filepath.Join(home, ".local", "share", "parmaan-patr"), nil
 }
 
+func GetLinuxDocumentsPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, "Documents", "parmaan-patr"), nil
+}
+
 func GetWinAppPath() (string, error) {
 	localAppData := os.Getenv("LOCALAPPDATA")
 	if localAppData == "" {
@@ -23,12 +31,28 @@ func GetWinAppPath() (string, error) {
 	return filepath.Join(localAppData, "parmaan-patr"), nil
 }
 
+func GetWinDocumentsPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, "Documents", "parmaan-patr"), nil
+}
+
 func GetDarwinAppPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
 	return filepath.Join(home, "Library", "Application Support", "parmaan-patr"), nil
+}
+
+func GetDarwinDocumentsPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, "Documents", "parmaan-patr"), nil
 }
 
 func GetAssetsAppPath() (string, error) {

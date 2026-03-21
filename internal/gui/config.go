@@ -19,6 +19,7 @@ type Config struct {
 	TypstBinPath      string
 	ApplicationPath   string
 	TypstTemplatePath []byte
+	InvoiceOutputPath string
 }
 
 func NewConfig() *Config {

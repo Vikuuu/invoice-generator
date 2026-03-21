@@ -37,23 +37,24 @@ func GenerateInvoice(
 	input map[string]any,
 	typstBinPath string,
 	typstTemplateEmbedData []byte,
+	outputPath string,
 ) error {
 	now := time.Now()
 	invoiceFileName := fmt.Sprintf(
-		"invoice-%d-%02d-%02d-%02d:%02d.pdf",
+		"invoice-%d-%02d-%02d %02d:%02d.pdf",
 		now.Year(),
 		now.Month(),
 		now.Day(),
 		now.Minute(),
 		now.Hour(),
 	)
-	pwd, err := filepath.Abs(".")
+	absOutputPath, err := filepath.Abs(outputPath)
 	if err != nil {
 		slog.Error("Filepath:", "msg", err)
 		return err
 	}
 
-	invoiceFilePath := filepath.Join(pwd, "invoices", invoiceFileName)
+	invoiceFilePath := filepath.Join(absOutputPath, invoiceFileName)
 
 	typstTempDir, err := os.MkdirTemp("", "typst")
 	if err != nil {
