@@ -85,6 +85,7 @@ func (c *Config) generateInvoicePage(a fyne.App, w fyne.Window) *widget.Form {
 	paymentTo := widget.NewSelectEntry(paymentDetailSelectEntryData)
 
 	form := &widget.Form{}
+	form.Append("Invoice Number", invoiceNumber)
 	form.Append("Invoice From", fromCompany)
 	form.Append("Invoice To", toCompany)
 	form.Append("Date", dateEntry)
