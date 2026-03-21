@@ -3,6 +3,7 @@ package generator
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -32,7 +33,11 @@ const typstMainTemplate = `
 )
 `
 
-func GenerateInvoice(input map[string]any, typstBinPath string) error {
+func GenerateInvoice(
+	input map[string]any,
+	typstBinPath string,
+	typstTemplateEmbedData []byte,
+) error {
 	now := time.Now()
 	invoiceFileName := fmt.Sprintf(
 		"invoice-%d-%02d-%02d-%02d:%02d.pdf",
@@ -50,9 +55,9 @@ func GenerateInvoice(input map[string]any, typstBinPath string) error {
 
 	invoiceFilePath := filepath.Join(pwd, "invoices", invoiceFileName)
 
-	typstMainFilePath, err := filepath.Abs("typst/main.typ")
+	typstTempDir, err := os.MkdirTemp("", "typst")
 	if err != nil {
-		slog.Error("Filepath:", "msg", err)
+		slog.Error("Generator:", "msg", "error creating temp folder"+err.Error())
 		return err
 	}
 
@@ -69,6 +74,17 @@ func GenerateInvoice(input map[string]any, typstBinPath string) error {
 
 	markup.WriteString(typstMainTemplate)
 
+	// Copy the embed typst template in the temp directory
+	tempTemplateFile, err := os.Create(filepath.Join(typstTempDir, "invoice_template.typ"))
+	if err != nil {
+		slog.Error("Generator:", "msg", "error creating template file in temp dir: "+err.Error())
+	}
+
+	_, err = tempTemplateFile.Write(typstTemplateEmbedData)
+	if err != nil {
+		slog.Error("Generator:", "msg", "error writing template data: "+err.Error())
+	}
+
 	// invoice file
 	invoiceFile, err := os.Create(invoiceFilePath)
 	if err != nil {
@@ -79,7 +95,7 @@ func GenerateInvoice(input map[string]any, typstBinPath string) error {
 
 	typstCaller := typst.CLI{
 		ExecutablePath:   typstBinPath,
-		WorkingDirectory: filepath.Dir(typstMainFilePath),
+		WorkingDirectory: typstTempDir,
 	}
 
 	slog.Info("Typst: ", "markup", markup.String())

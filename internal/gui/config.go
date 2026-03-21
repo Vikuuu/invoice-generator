@@ -11,13 +11,14 @@ import (
 )
 
 type Config struct {
-	Db              *sql.DB
-	Cont            *container.Split
-	Cwd             string
-	Queries         *database.Queries
-	Context         context.Context
-	TypstBinPath    string
-	ApplicationPath string
+	Db                *sql.DB
+	Cont              *container.Split
+	Cwd               string
+	Queries           *database.Queries
+	Context           context.Context
+	TypstBinPath      string
+	ApplicationPath   string
+	TypstTemplatePath []byte
 }
 
 func NewConfig() *Config {

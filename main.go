@@ -24,7 +24,7 @@ var (
 var ErrUnsupportedPlatform = errors.New("unsupported platform")
 
 func main() {
-	logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true}))
 	slog.SetDefault(logger)
 
 	a := app.NewWithID("io.invoice.go")
@@ -44,6 +44,7 @@ func main() {
 		slog.Error("Setup: App Folder", "msg", err)
 	}
 	cfg.ApplicationPath = path
+	cfg.TypstTemplatePath = embedTypstTemplate
 
 	err = createAppAssetsDir()
 	if err != nil {
