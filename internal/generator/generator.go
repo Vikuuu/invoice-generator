@@ -56,6 +56,11 @@ func GenerateInvoice(input map[string]any, typstBinPath string) error {
 		return err
 	}
 
+	input["image-path"], err = resolveImagePath(typstTempDir, input["image-path"].(string))
+	if err != nil {
+		slog.Error("Generator:", "msg", err)
+	}
+
 	var markup bytes.Buffer
 	if err := typst.InjectValues(&markup, input); err != nil {
 		slog.Error("Typst Dep:", "msg", err)
@@ -85,4 +90,28 @@ func GenerateInvoice(input map[string]any, typstBinPath string) error {
 	}
 	slog.Info("Typst: Success", "msg", "Created invoice successfully")
 	return nil
+}
+
+func resolveImagePath(typstDir, absImagePath string) (string, error) {
+	// Copy image into typst working dir and return relative path
+	filename := filepath.Base(absImagePath)
+	destPath := filepath.Join(typstDir, filename)
+
+	src, err := os.Open(absImagePath)
+	if err != nil {
+		return "", fmt.Errorf("error opening input image file: %w", err)
+	}
+	defer src.Close()
+
+	dst, err := os.Create(destPath)
+	if err != nil {
+		return "", fmt.Errorf("error creating output image file: %w", err)
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, src); err != nil {
+		return "", fmt.Errorf("error copying image data: %w", err)
+	}
+
+	return filename, nil // relative path — typst can find it
 }

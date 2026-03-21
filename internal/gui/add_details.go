@@ -24,7 +24,7 @@ func (c *Config) addNewCompany(a fyne.App, w fyne.Window) *widget.Form {
 	signatureEntry := widget.NewEntry()
 	signatureEntry.SetPlaceHolder("No file selected...")
 	signatureEntry.Disable()
-	var sigPath string
+	sigPath := ""
 
 	browseBtn := widget.NewButton("Browse", func() {
 		sigImage := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {

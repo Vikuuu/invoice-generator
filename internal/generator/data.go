@@ -116,7 +116,7 @@ func InvoiceDataMap(
 		},
 		"sub-total":  float32(0.00),
 		"igst":       float32(0.00),
-		"image-path": "fake-sign.jpg",
+		"image-path": fromCompany.SignatureImagePath,
 	}
 	slog.Info("Data to Typst", "data", data)
 	return data
