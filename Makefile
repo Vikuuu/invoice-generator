@@ -9,3 +9,6 @@ sqlc:
 
 clear-cache:
 	rm -rf ~/.local/share/parmaan-patr
+
+clear-invoice:
+	rm ./invoices/*
