@@ -19,7 +19,8 @@ func (c *Config) GreatingPage(a fyne.App, w fyne.Window) {
 }
 
 func (c *Config) CompanyPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
-	contentArea := container.NewStack(c.createCompanyList())
+	contentArea := container.NewStack()
+	contentArea.Objects = []fyne.CanvasObject{c.createCompanyList(a, w, contentArea)}
 
 	title := widget.NewLabel("Company Page")
 	title.TextStyle = fyne.TextStyle{Bold: true}
@@ -28,7 +29,7 @@ func (c *Config) CompanyPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
 		slog.Info("Called: Add new company")
 		form := c.addNewCompany(a, w)
 		backBtn := widget.NewButton("<- Back", func() {
-			contentArea.Objects = []fyne.CanvasObject{c.createCompanyList()}
+			contentArea.Objects = []fyne.CanvasObject{c.createCompanyList(a, w, contentArea)}
 			contentArea.Refresh()
 		})
 
@@ -45,11 +46,12 @@ func (c *Config) CompanyPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
 	// Header with title on left, button on right
 	header := container.NewBorder(nil, nil, title, btn)
 
-	return container.NewBorder(header, nil, nil, nil, contentArea)
+	return container.NewBorder(header, nil, nil, nil, container.NewHScroll(contentArea))
 }
 
 func (c *Config) PaymentDetailPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
-	contentArea := container.NewStack(c.createPaymentDetailList())
+	contentArea := container.NewStack()
+	contentArea.Objects = []fyne.CanvasObject{c.createPaymentDetailList(a, w, contentArea)}
 
 	title := widget.NewLabel("Payment Detail Page")
 	title.TextStyle = fyne.TextStyle{Bold: true}
@@ -58,7 +60,7 @@ func (c *Config) PaymentDetailPage(a fyne.App, w fyne.Window) fyne.CanvasObject 
 		slog.Info("Called: Add payment detail")
 		form := c.addNewPaymentMethod(a, w)
 		backBtn := widget.NewButton("<- Back", func() {
-			contentArea.Objects = []fyne.CanvasObject{c.createPaymentDetailList()}
+			contentArea.Objects = []fyne.CanvasObject{c.createPaymentDetailList(a, w, contentArea)}
 			contentArea.Refresh()
 		})
 
@@ -75,11 +77,12 @@ func (c *Config) PaymentDetailPage(a fyne.App, w fyne.Window) fyne.CanvasObject 
 	// Header with title on left, button on right
 	header := container.NewBorder(nil, nil, title, btn)
 
-	return container.NewBorder(header, nil, nil, nil, contentArea)
+	return container.NewBorder(header, nil, nil, nil, container.NewHScroll(contentArea))
 }
 
 func (c *Config) ItemPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
-	contentArea := container.NewStack(c.createItemList())
+	contentArea := container.NewStack()
+	contentArea.Objects = []fyne.CanvasObject{c.createItemList(a, w, contentArea)}
 
 	title := widget.NewLabel("Items Page")
 	title.TextStyle = fyne.TextStyle{Bold: true}
@@ -88,7 +91,7 @@ func (c *Config) ItemPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
 		slog.Info("Called: Add Items")
 		form := c.addNewItems(a, w)
 		backBtn := widget.NewButton("<- Back", func() {
-			contentArea.Objects = []fyne.CanvasObject{c.createItemList()}
+			contentArea.Objects = []fyne.CanvasObject{c.createItemList(a, w, contentArea)}
 			contentArea.Refresh()
 		})
 
@@ -105,11 +108,12 @@ func (c *Config) ItemPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
 	// Header with title on left, button on right
 	header := container.NewBorder(nil, nil, title, btn)
 
-	return container.NewBorder(header, nil, nil, nil, contentArea)
+	return container.NewBorder(header, nil, nil, nil, container.NewHScroll(contentArea))
 }
 
 func (c *Config) ShippingAddressPage(a fyne.App, w fyne.Window) fyne.CanvasObject {
-	contentArea := container.NewStack(c.createShippingAddressList())
+	contentArea := container.NewStack()
+	contentArea.Objects = []fyne.CanvasObject{c.createShippingAddressList(a, w, contentArea)}
 
 	title := widget.NewLabel("Shipping Address Page")
 	title.TextStyle = fyne.TextStyle{Bold: true}
@@ -118,7 +122,9 @@ func (c *Config) ShippingAddressPage(a fyne.App, w fyne.Window) fyne.CanvasObjec
 		slog.Info("Called: Add Shipping Address")
 		form := c.addShippingAddress(a, w)
 		backBtn := widget.NewButton("<- Back", func() {
-			contentArea.Objects = []fyne.CanvasObject{c.createShippingAddressList()}
+			contentArea.Objects = []fyne.CanvasObject{
+				c.createShippingAddressList(a, w, contentArea),
+			}
 			contentArea.Refresh()
 		})
 
@@ -135,7 +141,7 @@ func (c *Config) ShippingAddressPage(a fyne.App, w fyne.Window) fyne.CanvasObjec
 	// Header with title on left, button on right
 	header := container.NewBorder(nil, nil, title, btn)
 
-	return container.NewBorder(header, nil, nil, nil, contentArea)
+	return container.NewBorder(header, nil, nil, nil, container.NewHScroll(contentArea))
 }
 
 func (c *Config) InvoicePage(a fyne.App, w fyne.Window) fyne.CanvasObject {
